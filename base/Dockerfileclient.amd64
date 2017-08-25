@@ -1,0 +1,14 @@
+FROM onec/baseimage:latest
+
+RUN apt-get update && apt-get install -y -qq ngrok-client wget curl zip unzip tar mono-runtime mono-mcs git-core \
+        x11vnc vnc4server xvfb supervisor novnc ttf-ubuntu-font-family libwebkitgtk-1.0-0 xfonts-cyrillic fluxbox software-properties-common \
+        imagemagick libfreetype6 libgsf-bin libodbc1 \
+        && apt-get install -y -qq --no-install-recommends wine  \
+        && apt-add-repository -y ppa:dmpas/e8 && apt-get update -y -qq && apt-get install -y -q v8unpack libboost-filesystem-dev default-jdk pyvnc2swf \
+        && apt-get autoclean -y  \
+        && rm -rf /var/lib/apt/lists/*
+RUN wget --continue -O /tmp/novnc.zip https://github.com/kanaka/noVNC/archive/v0.5.1.zip && unzip -o /tmp/novnc.zip -d /opt/ && rm /tmp/novnc.zip \
+        && wget --continue -O /usr/local/bin/swarm.jar https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/2.2/swarm-client-2.2-jar-with-dependencies.jar; wget --continue -O /tmp/allure-commandline.zip https://github.com/allure-framework/allure1/releases/download/allure-core-1.5.2/allure-commandline.zip; sleep 2; wget --continue -O /tmp/allure-commandline.zip https://github.com/allure-framework/allure1/releases/download/allure-core-1.5.2/allure-commandline.zip && unzip /tmp/allure-commandline.zip -d /opt/allure-commandline && ln -s /opt/allure-commandline/bin/allure /usr/bin/allure
+
+RUN useradd --create-home --shell /bin/bash --user-group --groups adm,sudo ubuntu
+

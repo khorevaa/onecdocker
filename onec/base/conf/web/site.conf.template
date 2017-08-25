@@ -1,0 +1,14 @@
+#LoadModule _1cws_module "{{wsapXXso}}"
+Alias "/{{id}}" "{{dir_path}}"
+<Directory "{{dir_path}}">
+    # Always set these headers.
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+    Header always set Access-Control-Max-Age "1000"
+    Header always set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token"
+    AllowOverride All
+    Options None
+    Require all granted
+    SetHandler 1c-application
+    ManagedApplicationDescriptor "{{vrd_path}}"
+</Directory>

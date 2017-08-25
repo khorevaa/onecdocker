@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://v8.1c.ru/v8/tech-log">
+	<log history="1" location="/opt/serverdata/logs/tsg">
+		<property name="all"/>
+		<event>
+			<eq property="name" value="admin"/>
+		</event>
+		<event>
+			<eq property="name" value="proc"/>
+		</event>
+		<event>
+			<eq property="name" value="excp"/>
+		</event>
+		<event>
+			<eq property="name" value="qerr"/>
+		</event>
+		<event>
+			<eq property="Name" value="TDEADLOCK"/>
+		</event>
+		<event>
+			<eq property="name" value="SDBL"/>
+			<gt property="duration" value="20000"/>
+		</event>
+		<event>
+			<eq property="name" value="SDBL"/>
+			<eq property="func" value="setrollbackonly"/>
+		</event>
+		<event>
+			<eq property="name" value="DBMSSQL"/>
+			<gt property="duration" value="20000"/>
+		</event>
+		<event>
+			<eq property="name" value="CALL"/>
+			<gt property="memorypeak" value="10000000"/>
+		</event>
+		<event>
+			<eq property="name" value="DBPOSTGRS"/>
+			<gt property="duration" value="20000"/>
+		</event>
+		<event>
+			<eq property="name" value="LIC"/>
+		</event>
+	</log>
+	<dump create="true" type="0" prntscrn="false" location="/opt/serverdata/logs/dumps"/>
+	<defaultlog location="/opt/serverdata/logs/default"/>
+</config>

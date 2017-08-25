@@ -1,0 +1,36 @@
+FROM onec32/baseclient:latest
+
+ARG WEBHOST
+ADD conf /distr/
+
+RUN groupadd -r grp1cv8 --gid=1024 && useradd -r -m -g grp1cv8 --uid=1024 usr1cv8
+
+ENTRYPOINT ["dumb-init", "/distr/docker-entrypoint.sh"]
+
+EXPOSE 80
+EXPOSE 1540:1590
+EXPOSE 6080
+EXPOSE 5900
+
+ENV XVFB_RESOLUTION=1366x768x16
+
+RUN locale-gen ru_RU && locale-gen ru_RU.UTF-8 && update-locale LANG=ru_RU.UTF-8 LANGUAGE=ru_RU\
+    && cp /distr/supervisord/supervisor.conf /etc/supervisor/conf.d/supervisor.conf \
+    && curl http://$WEBHOST/client.deb32.tar.gz | tar xvz \
+    && curl http://$WEBHOST/deb.tar.gz | tar xvz \
+    && dpkg -i 1c*common*.deb && dpkg -i 1c*server*.deb \
+    && dpkg -i 1c*83-client*.deb \
+    && dpkg -i 1c*ws*.deb \
+    && dpkg-divert --local --add /etc/init.d/systemd-logind \
+    && ln -s /bin/true /etc/init.d/systemd-logind \
+    && rm -v *.deb \
+    && apt-get update && apt-get install -f -y \
+    && apt-get remove -y ttf-mscorefonts-installer \
+    && apt-get install -y ttf-mscorefonts-installer \
+    && apt-get clean && apt-get autoremove -y && apt-get autoclean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/tmp/* /tmp/* \
+    && chmod +x /distr/docker-entrypoint.sh
+
+
+CMD ["ragent"]

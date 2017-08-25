@@ -1,0 +1,2 @@
+LoadModule _1cws_module "{{wsapXXso}}"
+LoadModule headers_module modules/mod_headers.so

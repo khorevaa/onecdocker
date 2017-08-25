@@ -1,0 +1,50 @@
+FROM ubuntu:xenial
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV AKSUBS_TCP_SERVICE=""
+ENV NETHASPIP=""
+
+ENV LC_MESSAGES "POSIX"
+ENV RDATA=/opt/serverdata
+ENV REPODATA=/opt/repo
+ENV DESCRIPTORS=/opt/descriptors
+#ENV LICSERVERHOST=""
+#ENV LICSERVERAGENTPORT=""
+#ENV LICSERVERMANAGERPORT=""
+#ENV LICSERVERPORTRANGE=""
+
+ENV LANG ru_RU.UTF-8
+
+RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ xenial multiverse" > /etc/apt/sources.list.d/multiverse.list \
+    && apt-get update \
+    && apt-get install -y ca-certificates locales apt-transport-https wget curl \
+    && apt-get install -y  python-pip gcc language-pack-en language-pack-ru language-pack-uk language-pack-ru-base \
+    language-pack-uk-base software-properties-common \
+    imagemagick libfreetype6 libgsf-bin libodbc1 \
+    && apt-get install -y -q ca-certificates locales gcc \
+    imagemagick libfreetype6 libgsf-bin socat python-pip zip unzip tar mono-runtime mono-mcs git-core \
+    ttf-mscorefonts-installer socat libmono-i18n4.0-all \
+    && pip install --upgrade pip && pip install dumb-init \
+    && curl -o /usr/local/bin/gosu  -fsSL "https://github.com/tianon/gosu/releases/download/1.7/gosu-$(dpkg --print-architecture)" \
+    && chmod +x /usr/local/bin/gosu \
+    && pip install dumb-init watchdog jinja2 \
+    && wget -q --continue -O /tmp/oscript.deb http://oscript.io/downloads/night-build/deb \
+    && dpkg -i /tmp/oscript.deb \
+    && rm -rf /tmp/oscript.* \
+    && apt-get install -f -y \
+    && oscript /usr/share/oscript/lib/opm/src/opm.os install opm \
+    && oscript /usr/share/oscript/lib/opm/src/opm.os update -all \
+    && oscript /usr/share/oscript/lib/opm/src/opm.os install gitsync \
+    && oscript /usr/share/oscript/lib/opm/src/opm.os install deployka \
+    && oscript /usr/share/oscript/lib/opm/src/opm.os install ParserFileV8i \
+    && oscript /usr/share/oscript/lib/opm/src/opm.os install packman \
+    && apt-get install -y -qq apache2 apache2-bin \
+    && apt-get autoclean -y  \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN locale-gen ru_RU && locale-gen ru_RU.UTF-8 \
+    && locale-gen uk_UA && locale-gen uk_UA.UTF-8 \
+    && update-locale LANG=ru_RU.UTF-8
+
+

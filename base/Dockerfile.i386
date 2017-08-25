@@ -1,0 +1,47 @@
+FROM ubuntu32:xenial
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV AKSUBS_TCP_SERVICE=""
+#ENV NETHASPIP=""
+
+ENV LANG ru_RU.UTF-8
+ENV LANGUAGE ru_RU.UTF-8
+ENV LC_MESSAGES "ru_RU.UTF-8"
+ENV RDATA=/opt/serverdata
+ENV REPODATA=/opt/repo
+ENV DESCRIPTORS=/opt/descriptors
+#ENV LICSERVERHOST=""
+#ENV LICSERVERAGENTPORT=""
+#ENV LICSERVERMANAGERPORT=""
+#ENV LICSERVERPORTRANGE=""
+#&& echo "deb http://archive.ubuntu.com/ubuntu/ xenial multiverse" > /etc/apt/sources.list.d/multiverse.list \
+
+RUN test -n "$HTTP_PROXY" && echo "Acquire::http::Proxy \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf.d/01proxy || echo "" >> /etc/apt/apt.conf.d/01proxy
+RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections \
+    && apt-get update \
+    && apt-get install -y ca-certificates locales apt-transport-https wget curl \
+    && apt-get install -y  python-pip gcc language-pack-en language-pack-ru language-pack-uk language-pack-ru-base \
+    language-pack-uk-base software-properties-common \
+    imagemagick libfreetype6 libgsf-bin libgsf-1-114 libodbc1 libglib2.0-bin unixodbc libwebkit-dev \
+    ttf-mscorefonts-installer socat libmono-i18n4.0-all mono-runtime mono-mcs gosu nano dnsutils iputils-ping \
+    git-core \
+    && pip install dumb-init watchdog jinja2 \
+    && wget -q --continue -O /tmp/oscript.deb http://oscript.io/downloads/night-build/deb \
+    && dpkg -i /tmp/oscript.deb \
+    && git clone --recursive https://github.com/EvilBeaver/oscript-library.git /opt/oscript-library \
+    && rm -rf /usr/share/oscript/lib \
+    && cp -R /opt/oscript-library/src /usr/share/oscript/lib \
+    && rm -rf /tmp/oscript.* \
+    && linux32 apt-get install -f -y
+
+RUN linux32 apt-get install -y -qq apache2 apache2-bin \
+    && apt-get autoclean -y  \
+    && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/apt.conf.d/01proxy
+
+RUN locale-gen ru_RU && locale-gen ru_RU.UTF-8 \
+    && locale-gen uk_UA && locale-gen uk_UA.UTF-8 \
+    && locale-gen en_US \
+    && update-locale LANG=ru_RU.UTF-8 LANGUAGE=ru_RU
+
+RUN useradd --uid=1000 --create-home --shell /bin/bash --user-group --groups adm,sudo ubuntu
+RUN opm install opm && opm update -all

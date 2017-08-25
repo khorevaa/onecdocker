@@ -1,0 +1,11 @@
+﻿[todel]
+Connect=File="/home/ubuntu/todel";
+ID=4cb09fb6-192d-11e7-5e93-0242ac110002
+OrderInList=1
+Folder=/
+OrderInTree=1
+External=0
+ClientConnectionSpeed=Normal
+App=Auto
+WA=1
+Version=8.3
