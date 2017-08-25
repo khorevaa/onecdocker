@@ -1,7 +1,7 @@
 #!/bin/bash
 
 vagrant up
-vagrant ssh -c "cd /vagrant && chmod +x ./build.sh && BUILDPROXY=http://192.168.1.31:3142 ./build.sh"
+vagrant ssh -c "cd /vagrant && chmod +x ./build.sh && ./build.sh"
 vagrant ssh -c "docker rmi -f onec/32bit/baseclient:latest"
 vagrant ssh -c "docker rmi -f onec/32bit/baseimage:latest"
 #vagrant ssh -c "docker rmi -f onec/32bit/baseimage:latest"
